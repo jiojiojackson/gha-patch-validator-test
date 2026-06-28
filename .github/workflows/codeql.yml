@@ -1,0 +1,33 @@
+name: CodeQL GHA Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+
+permissions:
+  security-events: write
+  actions: read
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze GitHub Actions workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # GitHub Actions workflow analysis is available through CodeQL code scanning.
+      # If this preview language is not available in your account, enable CodeQL
+      # default setup in the repository UI and use --manual-patch or --skip-codeql-wait
+      # for local prototype testing.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: actions
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4

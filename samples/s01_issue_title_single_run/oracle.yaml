@@ -1,0 +1,63 @@
+sample_id: s01_issue_title_single_run
+workflow_file: s01_under_test.yml
+workflow_name: S01 Issue Title Single Run Under Test
+
+source:
+  event: issues
+  field: github.event.issue.title
+
+sink:
+  type: single_line_run
+  vulnerable_pattern: 'run: title="${{ github.event.issue.title }}"; echo "VALUE::$title"'
+
+normal_input: "Release v1.0"
+malicious_input: 'Release v1.0"; echo "marker" > "$RUNNER_TEMP/gha_validator_s01_marker"; #'
+
+checkpoints:
+  security:
+    marker_present: EXECUTION_MARKER_PRESENT
+    marker_absent: EXECUTION_MARKER_ABSENT
+  functionality:
+    expected_conclusion: success
+    required_log_markers:
+      input_value: "VALUE::Release v1.0"
+      downstream_reached: DOWNSTREAM_REACHED
+
+validation_matrix:
+  pre_patch:
+    security_run:
+      workflow: vulnerable
+      input: malicious_input
+      purpose: Confirm the benchmark is exploitable before patching.
+    functionality_run:
+      workflow: vulnerable
+      input: normal_input
+      purpose: Establish the baseline local observable behavior before patching.
+  post_patch:
+    security_run:
+      workflow: patched
+      input: malicious_input
+      purpose: Check whether the candidate patch blocks command execution.
+    functionality_run:
+      workflow: patched
+      input: normal_input
+      purpose: Check whether the candidate patch preserves local observable behavior.
+
+classification_policy:
+  invalid_benchmark_if:
+    - pre_patch security marker is not present under malicious input
+    - pre_patch functionality checkpoints do not pass under normal input
+  reject_security_if:
+    - post_patch security marker is still present under malicious input
+  invalid_if:
+    - post_patch workflow does not complete successfully under normal input
+  reject_functionality_if:
+    - post_patch normal run completes but required functionality markers are missing
+  accept_if:
+    - pre_patch security and functionality baselines are valid
+    - post_patch security marker is absent
+    - post_patch functionality checkpoints pass
+
+codeql:
+  expected_rule_id: actions/code-injection/medium
+  target_path: .github/workflows/s01_under_test.yml
