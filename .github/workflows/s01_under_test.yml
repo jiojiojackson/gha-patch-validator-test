@@ -1,0 +1,33 @@
+name: S01 Issue Title Single Run Under Test
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use issue title - vulnerable single-line run
+        run: title="${{ github.event.issue.title }}"; echo "VALUE::$title"
+
+      - name: Downstream reachability checkpoint
+        if: always()
+        run: echo "DOWNSTREAM_REACHED"
+
+      - name: Check injection marker file
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/gha_validator_s01_marker" ]; then
+            echo "EXECUTION_MARKER_PRESENT"
+          else
+            echo "EXECUTION_MARKER_ABSENT"
+          fi
