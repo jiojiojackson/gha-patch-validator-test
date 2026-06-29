@@ -1,4 +1,4 @@
-name: GHA Validator Runtime I(P)
+name: GHA Validator Runtime I(V)
 'on':
   issues:
     types:
@@ -28,9 +28,7 @@ jobs:
     - name: GHA Validator - target checkpoint
       run: echo "GHA_VALIDATOR_TARGET_REACHED"
     - name: Use issue title in release command
-      env:
-        TITLE: ${{ github.event.issue.title }}
-      run: echo "Release title is $TITLE"
+      run: title="${{ github.event.issue.title }}"; echo "Release title is $title"
     - name: GHA Validator - downstream checkpoint
       run: echo "GHA_VALIDATOR_DOWNSTREAM_REACHED"
     - name: GHA Validator - marker observer
