@@ -1,0 +1,34 @@
+{
+  "vulnerability_id": "issue_title_argument_or_assignment_run",
+  "workflow": {
+    "path": ".github/workflows/s01_original.yml",
+    "job_id": "validate",
+    "step_index": 0,
+    "step_name": "Use issue title in release command",
+    "alert_line": 20,
+    "rule_id": "actions/cache-poisoning/code-injection",
+    "run_fingerprint": "358fc08c030e645ce186c70e734f8716e860a91c4df68ca07303394b2ea34434"
+  },
+  "source": {
+    "kind": "issue_title",
+    "expression": "github.event.issue.title",
+    "event_builder": "issue_opened_title",
+    "normal_input": "Release v1.0"
+  },
+  "sink": {
+    "kind": "argument_or_assignment_run",
+    "shell": "bash",
+    "run_excerpt": "title=\"${{ github.event.issue.title }}\"; echo \"Release title is $title\"",
+    "payload_template": "argument_assignment_breakout"
+  },
+  "instrumentation": {
+    "workflow_runtime_path": ".github/workflows/s01_validator.yml",
+    "marker_filename": "gha_validator_marker",
+    "source_hash_checkpoint": "GHA_VALIDATOR_SOURCE_SHA256",
+    "target_checkpoint": "GHA_VALIDATOR_TARGET_REACHED",
+    "downstream_checkpoint": "GHA_VALIDATOR_DOWNSTREAM_REACHED",
+    "marker_present": "GHA_VALIDATOR_EXECUTION_MARKER_PRESENT",
+    "marker_absent": "GHA_VALIDATOR_EXECUTION_MARKER_ABSENT"
+  },
+  "alert_number": 2
+}
