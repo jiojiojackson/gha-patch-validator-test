@@ -1,0 +1,25 @@
+name: S01 Original Vulnerable Workflow
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use issue title in release command
+        env:
+          TITLE: ${{ github.event.issue.title }}
+        run: echo "Release title is $TITLE"
+
+      - name: Business downstream step
+        run: echo "Business downstream step executed"
