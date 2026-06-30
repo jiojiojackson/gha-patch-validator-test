@@ -17,7 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use issue title in release command
-        run: title="${{ github.event.issue.title }}"; echo "Release title is $title"
+        env:
+          TITLE: ${{ github.event.issue.title }}
+        run: echo "Release title is $TITLE"
 
       - name: Business downstream step
         run: echo "Business downstream step executed"
